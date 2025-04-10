@@ -36,31 +36,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Send message to the API
-    async function sendMessage(message) {
-        showTypingIndicator();
+   // Replace the sendMessage function with this:
+async function sendMessage(message) {
+    showTypingIndicator();
+    
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                message: message,
+                session_id: 'user_' + Math.random().toString(36).substr(2, 9) // Simple session ID
+            }),
+        });
         
-        try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message: message }),
-            });
-            
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            
-            const data = await response.json();
-            hideTypingIndicator();
-            addMessage(data.response, false);
-        } catch (error) {
-            hideTypingIndicator();
-            addMessage("Sorry, I'm having trouble connecting to the server. Please try again later.", false);
-            console.error('Error:', error);
-        }
+        if (!response.ok) throw new Error('Network error');
+        const data = await response.json();
+        hideTypingIndicator();
+        addMessage(data.response, false);
+    } catch (error) {
+        hideTypingIndicator();
+        addMessage("Sorry, I'm having trouble connecting. Try again later.", false);
     }
+}
     
     // Handle user input
     function handleUserInput() {
