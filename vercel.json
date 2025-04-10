@@ -3,7 +3,11 @@
   "builds": [
     {
       "src": "api/chat.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": { 
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.9"
+      }
     },
     {
       "src": "public/**",
@@ -13,11 +17,21 @@
   "routes": [
     {
       "src": "/api/chat",
-      "dest": "/api/chat.py"
+      "dest": "/api/chat.py",
+      "methods": ["POST", "OPTIONS"]
     },
     {
       "src": "/(.*)",
       "dest": "/public/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" }
+      ]
     }
   ]
 }
